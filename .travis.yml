@@ -9,7 +9,6 @@ deploy:
     secure: Uyx0s8cvlTwy1+hOQewpLUL4JZhF0H/YH4+fEARz7ejldNMdZZMzgbSlvaa/kEPoV4pRKVl9JIlPRToDv0e3xdycVeAN8t27FcjGax4rMJ4F9a6fuaCFRtDjSu757YgBj62C+2rNvDVkVYCoqTAtB409EqSXajZXQajxKUXKpn0=
   file:
     - build/distributions/xmlcalabash1-xmlunit-$TRAVIS_TAG.zip
-    - build/libs/xmlcalabash1-xmlunit-$TRAVIS_TAG.zip
   on:
     tags: true
     all_branches: true
