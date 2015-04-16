@@ -1,8 +1,6 @@
 # XML Calabash XMLUnit extension step
 
-
 [![Build Status](https://travis-ci.org/ndw/xmlcalabash1-xmlunit.svg?branch=master)](https://travis-ci.org/ndw/xmlcalabash1-xmlunit.svg?branch=master)
-
 
 This repository contains an
 [XML Calabash 1.0](http://github.com/ndw/xmlcalabash1) 1.0 extension
