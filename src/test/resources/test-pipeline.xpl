@@ -20,7 +20,7 @@
 </p:declare-step>
 -->
 
-<p:import href="../../../resources/library.xpl"/>
+<p:import href="http://xmlcalabash.com/extension/steps/xmlunit.xpl"/>
 
 <cxu:compare name="compare">
   <p:input port="source">
