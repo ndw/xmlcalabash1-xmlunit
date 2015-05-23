@@ -12,7 +12,8 @@ This step should work with either Saxon 9.5 or Saxon 9.6.
 ## Installation
 
 For standalone installation, get the most recent release from the project
-[releases](releases) page. The release distributed there includes the
+[releases](http://github.com/ndw/xmlcalabash1-xmlunit/releases) page.
+The release distributed there includes the
 relevant dependencies. Unpack it somewhere on your system and add the
 included, top-level `jar` file to your class path.
 
