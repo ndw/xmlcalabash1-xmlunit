@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/ndw/xmlcalabash1-xmlunit.svg?branch=master)](https://travis-ci.org/ndw/xmlcalabash1-xmlunit.svg?branch=master)
 
 This repository contains an
-[XML Calabash 1.0](http://github.com/ndw/xmlcalabash1) 1.0 extension
+[XML Calabash](http://github.com/ndw/xmlcalabash1) 1.1 extension
 step that can compare XML documents using
 [XMLUnit](http://www.xmlunit.org/).
 
