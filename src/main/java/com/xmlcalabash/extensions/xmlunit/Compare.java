@@ -58,165 +58,162 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-/**
-* @author Charles Foster
-*/
-
 @XMLCalabash(
         name = "cxu:compare",
         type = "{http://xmlcalabash.com/ns/extensions/xmlunit}compare")
 
 public class Compare extends DefaultStep {
-	private static final QName c_result = new QName("c", XProcConstants.NS_XPROC_STEP, "result");
+    private static final QName c_result = new QName("c", XProcConstants.NS_XPROC_STEP, "result");
 
-	private static final QName _fail_if_not_equal        = new QName("","fail-if-not-equal");
-	private static final QName _compare_unmatched        = new QName("","compare-unmatched");
-	private static final QName _ignore_comments          = new QName("","ignore-comments");
-	private static final QName _ignore_whitespace        = new QName("","ignore-whitespace");
-	private static final QName _normalize                = new QName("","normalize");
-	private static final QName _normalize_whitespace     = new QName("","normalize-whitespace");
-	private static final QName _ignore_diff_between_text_and_cdata = new QName("","ignore-diff-between-text-and-cdata");
+    private static final QName _fail_if_not_equal        = new QName("","fail-if-not-equal");
+    private static final QName _compare_unmatched        = new QName("","compare-unmatched");
+    private static final QName _ignore_comments          = new QName("","ignore-comments");
+    private static final QName _ignore_whitespace        = new QName("","ignore-whitespace");
+    private static final QName _normalize                = new QName("","normalize");
+    private static final QName _normalize_whitespace     = new QName("","normalize-whitespace");
+    private static final QName _ignore_diff_between_text_and_cdata = new QName("","ignore-diff-between-text-and-cdata");
 
-	private static final boolean default_compare_unmatched        = false;
-	private static final boolean default_ignore_comments          = false;
-	private static final boolean default_ignore_whitespace        = false;
-	private static final boolean default_normalize                = false;
-	private static final boolean default_normalize_whitespace     = false;
-	private static final boolean default_ignore_diff_between_text_and_cdata = false;
+    private static final boolean default_compare_unmatched        = false;
+    private static final boolean default_ignore_comments          = false;
+    private static final boolean default_ignore_whitespace        = false;
+    private static final boolean default_normalize                = false;
+    private static final boolean default_normalize_whitespace     = false;
+    private static final boolean default_ignore_diff_between_text_and_cdata = false;
 
-	private static final String library_xpl = "http://xmlcalabash.com/extension/steps/xmlunit.xpl";
+    private static final String library_xpl = "http://xmlcalabash.com/extension/steps/xmlunit.xpl";
+    private static final String library_url = "/com/xmlcalabash/extensions/xmlunit/library.xpl";
 
-	private ReadablePipe source = null;
-	private ReadablePipe alternate = null;
-	private WritablePipe result = null;
+    private ReadablePipe source = null;
+    private ReadablePipe alternate = null;
+    private WritablePipe result = null;
 
-	static
-	{
-		XMLUnit.setTransformerFactory("net.sf.saxon.TransformerFactoryImpl");
-		XMLUnit.setXPathFactory("net.sf.saxon.xpath.XPathFactoryImpl");
-		// XMLUnit.setXSLTVersion("2.0"); // XML Unit has been tested with XSLT version "1.0"
-	}
+    static
+    {
+        XMLUnit.setTransformerFactory("net.sf.saxon.TransformerFactoryImpl");
+        XMLUnit.setXPathFactory("net.sf.saxon.xpath.XPathFactoryImpl");
+        // XMLUnit.setXSLTVersion("2.0"); // XML Unit has been tested with XSLT version "1.0"
+    }
 
-	/**
-	* Creates a new instance of XML Unit Compare
-	*/
-	public Compare(XProcRuntime runtime, XAtomicStep step) {
-		super(runtime, step);
-	}
+    /**
+     * Creates a new instance of XML Unit Compare
+     */
+    public Compare(XProcRuntime runtime, XAtomicStep step) {
+        super(runtime, step);
+    }
 
-	public void setInput(String port, ReadablePipe pipe) {
-		if("source".equals(port))
-			source = pipe;
-		else
-			alternate = pipe;
-	}
+    public void setInput(String port, ReadablePipe pipe) {
+        if("source".equals(port))
+            source = pipe;
+        else
+            alternate = pipe;
+    }
 
-	public void setOutput(String port, WritablePipe pipe) {
-		result = pipe;
-	}
+    public void setOutput(String port, WritablePipe pipe) {
+        result = pipe;
+    }
 
-	public void reset() {
-		source.resetReader();
-		result.resetWriter();
-	}
+    public void reset() {
+        source.resetReader();
+        result.resetWriter();
+    }
 
-	private String getXMLDocument(XdmNode saxonNode) throws SaxonApiException
-	{
-		Serializer serializer = makeSerializer();
-		ByteArrayOutputStream stream = new ByteArrayOutputStream();
-		serializer.setOutputStream(stream);
+    private String getXMLDocument(XdmNode saxonNode) throws SaxonApiException
+    {
+        Serializer serializer = makeSerializer();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        serializer.setOutputStream(stream);
         S9apiUtils.serialize(runtime, saxonNode, serializer);
 
-		try {
-			return stream.toString("UTF-8");
-		} catch (UnsupportedEncodingException uee) {
-			// This can't happen...
-			throw new XProcException(uee);
-		}
-	}
+        try {
+            return stream.toString("UTF-8");
+        } catch (UnsupportedEncodingException uee) {
+            // This can't happen...
+            throw new XProcException(uee);
+        }
+    }
 
-	public void run() throws SaxonApiException {
-		super.run();
+    public void run() throws SaxonApiException {
+        super.run();
 
-		String sourceDoc = getXMLDocument(source.read());
-		String alternateDoc = getXMLDocument(alternate.read());
+        String sourceDoc = getXMLDocument(source.read());
+        String alternateDoc = getXMLDocument(alternate.read());
 
-		boolean same = false;
+        boolean same = false;
 
-		try
-		{
-			XMLUnit.setCompareUnmatched(getOption(_compare_unmatched, default_compare_unmatched));
-			XMLUnit.setIgnoreComments(getOption(_ignore_comments, default_ignore_comments));
-			XMLUnit.setIgnoreDiffBetweenTextAndCDATA(getOption(_ignore_diff_between_text_and_cdata, default_ignore_diff_between_text_and_cdata));
-			XMLUnit.setIgnoreWhitespace(getOption(_ignore_whitespace, default_ignore_whitespace));
-			XMLUnit.setNormalize(getOption(_normalize, default_normalize));
+        try
+        {
+            XMLUnit.setCompareUnmatched(getOption(_compare_unmatched, default_compare_unmatched));
+            XMLUnit.setIgnoreComments(getOption(_ignore_comments, default_ignore_comments));
+            XMLUnit.setIgnoreDiffBetweenTextAndCDATA(getOption(_ignore_diff_between_text_and_cdata, default_ignore_diff_between_text_and_cdata));
+            XMLUnit.setIgnoreWhitespace(getOption(_ignore_whitespace, default_ignore_whitespace));
+            XMLUnit.setNormalize(getOption(_normalize, default_normalize));
 
-			XMLAssert.assertXMLEqual(sourceDoc, alternateDoc);
+            XMLAssert.assertXMLEqual(sourceDoc, alternateDoc);
 
-			same = true;
-		}
-		catch(AssertionFailedError e) { }
-		catch(SAXException e) { throw new SaxonApiException(e.getMessage()); }
-		catch(IOException e) { throw new SaxonApiException(e.getMessage()); }
-		catch(Exception e) { throw new SaxonApiException(e.getMessage());  }
+            same = true;
+        }
+        catch(AssertionFailedError e) { }
+        catch(SAXException e) { throw new SaxonApiException(e.getMessage()); }
+        catch(IOException e) { throw new SaxonApiException(e.getMessage()); }
+        catch(Exception e) { throw new SaxonApiException(e.getMessage());  }
 
-		if (!same && getOption(_fail_if_not_equal, false)) {
-			throw XProcException.stepError(19);
-		}
+        if (!same && getOption(_fail_if_not_equal, false)) {
+            throw XProcException.stepError(19);
+        }
 
-		TreeWriter treeWriter = new TreeWriter(runtime);
-		treeWriter.startDocument(step.getNode().getBaseURI());
-		treeWriter.addStartElement(c_result);
-		treeWriter.startContent();
-		treeWriter.addText(String.valueOf(same));
-		treeWriter.addEndElement();
-		treeWriter.endDocument();
+        TreeWriter treeWriter = new TreeWriter(runtime);
+        treeWriter.startDocument(step.getNode().getBaseURI());
+        treeWriter.addStartElement(c_result);
+        treeWriter.startContent();
+        treeWriter.addText(String.valueOf(same));
+        treeWriter.addEndElement();
+        treeWriter.endDocument();
 
-		result.write(treeWriter.getResult());
-	}
+        result.write(treeWriter.getResult());
+    }
 
-	public static void configureStep(XProcRuntime runtime) {
-		XProcURIResolver resolver = runtime.getResolver();
-		URIResolver uriResolver = resolver.getUnderlyingURIResolver();
-		URIResolver myResolver = new StepResolver(uriResolver);
-		resolver.setUnderlyingURIResolver(myResolver);
-	}
+    public static void configureStep(XProcRuntime runtime) {
+        XProcURIResolver resolver = runtime.getResolver();
+        URIResolver uriResolver = resolver.getUnderlyingURIResolver();
+        URIResolver myResolver = new StepResolver(uriResolver);
+        resolver.setUnderlyingURIResolver(myResolver);
+    }
 
-	private static class StepResolver implements URIResolver {
-		Logger logger = LoggerFactory.getLogger(Compare.class);
-		URIResolver nextResolver = null;
+    private static class StepResolver implements URIResolver {
+        Logger logger = LoggerFactory.getLogger(Compare.class);
+        URIResolver nextResolver = null;
 
-		public StepResolver(URIResolver next) {
-			nextResolver = next;
-		}
+        public StepResolver(URIResolver next) {
+            nextResolver = next;
+        }
 
-		@Override
-		public Source resolve(String href, String base) throws TransformerException {
-			try {
-				URI baseURI = new URI(base);
-				URI xpl = baseURI.resolve(href);
-				if (library_xpl.equals(xpl.toASCIIString())) {
-					URL url = Compare.class.getResource("/library.xpl");
-					logger.debug("Reading library.xpl for cxu:compare from " + url);
-					InputStream s = Compare.class.getResourceAsStream("/library.xpl");
-					if (s != null) {
-						SAXSource source = new SAXSource(new InputSource(s));
-						return source;
-					} else {
-						logger.info("Failed to read library.xpl for cxu:compare");
-					}
-				}
-			} catch (URISyntaxException e) {
-				// nevermind
-			}
+        @Override
+        public Source resolve(String href, String base) throws TransformerException {
+            try {
+                URI baseURI = new URI(base);
+                URI xpl = baseURI.resolve(href);
+                if (library_xpl.equals(xpl.toASCIIString())) {
+                    URL url = Compare.class.getResource(library_url);
+                    logger.debug("Reading library.xpl for cxu:compare from " + url);
+                    InputStream s = Compare.class.getResourceAsStream(library_url);
+                    if (s != null) {
+                        SAXSource source = new SAXSource(new InputSource(s));
+                        return source;
+                    } else {
+                        logger.info("Failed to read " + library_url + " for cxu:compare");
+                    }
+                }
+            } catch (URISyntaxException e) {
+                // nevermind
+            }
 
-			if (nextResolver != null) {
-				return nextResolver.resolve(href, base);
-			} else {
-				return null;
-			}
-		}
-	}
+            if (nextResolver != null) {
+                return nextResolver.resolve(href, base);
+            } else {
+                return null;
+            }
+        }
+    }
 }
 
 
