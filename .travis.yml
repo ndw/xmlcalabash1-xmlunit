@@ -9,9 +9,11 @@ install:
 deploy:
   provider: releases
   api_key:
-    secure: Uyx0s8cvlTwy1+hOQewpLUL4JZhF0H/YH4+fEARz7ejldNMdZZMzgbSlvaa/kEPoV4pRKVl9JIlPRToDv0e3xdycVeAN8t27FcjGax4rMJ4F9a6fuaCFRtDjSu757YgBj62C+2rNvDVkVYCoqTAtB409EqSXajZXQajxKUXKpn0=
+    secure: cUQJO634saTtszpZZNNl8t+9hnQho5snjVv6BPC8s+QcYB4FN7KPx9+MhDqdhKuDDC7UTSIfeWI4xCdjcOijO1YAiB0f0Gf52820C+yDwnOk+Fo916CG1FKzrTWzWRBgLpNcJrNWs6UpQpaKoTlqEqF2nkAP6Ud6dQrFTI+3YZY=
   file:
     - build/distributions/xmlcalabash1-xmlunit-$TRAVIS_TAG.zip
   on:
     tags: true
     all_branches: true
+
+
